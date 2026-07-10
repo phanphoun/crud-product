@@ -1,14 +1,13 @@
-const db = require("../config/db");
-
+import db from "../config/db.js";
 
 // GET ALL PRODUCTS
-exports.getProducts = (req,res)=>{
+export const getProducts = (req, res) => {
 
     db.query(
         "SELECT * FROM products ORDER BY id DESC",
-        (err,result)=>{
+        (err, result) => {
 
-            if(err)
+            if (err)
                 return res.status(500).json(err);
 
 
@@ -23,18 +22,18 @@ exports.getProducts = (req,res)=>{
 
 // GET SINGLE PRODUCT
 
-exports.getProduct = (req,res)=>{
+export const getProduct = (req, res) => {
 
-    const id=req.params.id;
+    const id = req.params.id;
 
 
     db.query(
         "SELECT * FROM products WHERE id=?",
         [id],
-        (err,result)=>{
+        (err, result) => {
 
 
-            if(err)
+            if (err)
                 return res.status(500).json(err);
 
 
@@ -50,28 +49,27 @@ exports.getProduct = (req,res)=>{
 
 // CREATE PRODUCT
 
-exports.createProduct=(req,res)=>{
+export const createProduct = (req, res) => {
 
-
-    const {name,price,description}=req.body;
+    const { name, price, description } = req.body;
 
 
     db.query(
 
         "INSERT INTO products(name,price,description) VALUES(?,?,?)",
 
-        [name,price,description],
+        [name, price, description],
 
-        (err,result)=>{
+        (err, result) => {
 
 
-            if(err)
+            if (err)
                 return res.status(500).json(err);
 
 
             res.json({
-                message:"Product created",
-                id:result.insertId
+                message: "Product created",
+                id: result.insertId
             });
 
         }
@@ -83,19 +81,16 @@ exports.createProduct=(req,res)=>{
 
 
 
-
 // UPDATE PRODUCT
 
-exports.updateProduct=(req,res)=>{
+export const updateProduct = (req, res) => {
 
-
-    const id=req.params.id;
-
+    const id = req.params.id;
     const {
         name,
         price,
         description
-    }=req.body;
+    } = req.body;
 
 
 
@@ -110,15 +105,15 @@ exports.updateProduct=(req,res)=>{
             id
         ],
 
-        (err)=>{
+        (err) => {
 
 
-            if(err)
+            if (err)
                 return res.status(500).json(err);
 
 
             res.json({
-                message:"Product updated"
+                message: "Product updated"
             });
 
 
@@ -130,15 +125,11 @@ exports.updateProduct=(req,res)=>{
 
 
 
-
-
-
 // DELETE PRODUCT
 
-exports.deleteProduct=(req,res)=>{
+export const deleteProduct = (req, res) => {
 
-
-    const id=req.params.id;
+    const id = req.params.id;
 
 
     db.query(
@@ -147,18 +138,17 @@ exports.deleteProduct=(req,res)=>{
 
         [id],
 
-        (err)=>{
+        (err) => {
 
 
-            if(err)
+            if (err)
                 return res.status(500).json(err);
 
 
 
             res.json({
-                message:"Product deleted"
+                message: "Product deleted"
             });
-
 
         }
 

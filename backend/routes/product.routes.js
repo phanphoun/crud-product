@@ -1,21 +1,17 @@
-const express=require("express");
+import express from "express";
 
-const router=express.Router();
+import * as controller from "../controllers/product.controller.js";
 
+const router = express.Router();
 
-const controller=require("../controllers/product.controller");
+router.get("/", controller.getProducts);
 
+router.get("/:id", controller.getProduct);
 
-router.get("/",controller.getProducts);
+router.post("/", controller.createProduct);
 
-router.get("/:id",controller.getProduct);
+router.put("/:id", controller.updateProduct);
 
-router.post("/",controller.createProduct);
+router.delete("/:id", controller.deleteProduct);
 
-router.put("/:id",controller.updateProduct);
-
-router.delete("/:id",controller.deleteProduct);
-
-
-
-module.exports=router;
+export default router;
