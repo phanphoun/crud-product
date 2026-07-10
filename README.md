@@ -319,6 +319,65 @@ Skills:
 
 ---
 
+# 🚀 Production Deployment (no Docker)
+
+The backend serves the built React app itself, so the browser talks to the
+API on the **same origin** — no browser CORS headaches in production. CORS is
+still configured (allowlist via `CLIENT_ORIGIN`) for any cross-origin callers.
+
+### 1. Build the frontend
+```bash
+cd frontend
+npm install
+VITE_API_URL=/api npm run build     # outputs to frontend/dist
+```
+
+### 2. Configure the backend environment
+Create `backend/.env` (copy from `.env.example`) and set:
+```env
+PORT=5000
+CLIENT_ORIGIN=https://your-domain.com   # comma-separated for multiple
+DB_HOST=localhost
+DB_USER=app_user
+DB_PASSWORD=********
+DB_NAME=product_db
+DB_PORT=3306
+```
+
+### 3. Install backend deps + run with PM2 (process manager)
+```bash
+cd backend
+npm install
+npm run prod        # pm2 start ecosystem.config.cjs --env production
+```
+Other PM2 commands: `pm2 ls`, `pm2 logs`, `pm2 reload product-api`, `pm2 save`.
+
+### 4. (Recommended) Put it behind nginx + HTTPS
+PM2 runs on port 5000; nginx terminates TLS and proxies `/` → `localhost:5000`.
+Because nginx and the API are same-origin to the browser, no CORS is triggered.
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name your-domain.com;
+    # ssl_certificate / ssl_certificate_key ... (use certbot/Let's Encrypt)
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+### What changed for production safety
+- **CORS** restricted to an explicit `CLIENT_ORIGIN` allowlist (was `cors()` = allow-all).
+- **Helmet** security headers, **compression**, and **rate limiting** added.
+- **MySQL connection pool** (was a single fragile connection).
+- **Health check** at `GET /health` for process managers / load balancers.
+- **SPA fallback** so client-side routes work when served by Express.
+
 # ⭐ Project Purpose
 
 This project was created to practice and demonstrate full-stack development skills, including frontend development, backend API design, database management, and software architecture.
